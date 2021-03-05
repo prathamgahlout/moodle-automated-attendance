@@ -16,9 +16,9 @@ In addition to this it requires the python requests module and BeautifulSoup to 
 
 After it has been successfully installed, pip install these modules,
 
-`pip install requests`
+`$ pip install requests`
 
-`pip install beautifulsoup4`
+`$ pip install beautifulsoup4`
 
 
 And you are good to go...
@@ -45,13 +45,13 @@ For example on a certain day the file would look like this,
   14:00 DM\
   17:00 STAT**
 
-**Note: Use 24-Hour time format. Otherwise it won't work and don't blame me if you loose your attendance. And please save the schedule in a ascending format. This is also must for correct functioning.**
+**Note: Use 24-Hour time format. Otherwise it won't work and don't blame me if you loose your attendance. And please save the schedule in an ascending order of time. This is also must for correct functioning.**
 
 Keep in mind that you have to daily update the schedule.txt file only.
 
 Now just fire it up with,
 
-`python RunScript.py`
+`$ python RunScript.py`
 
 ---
 
