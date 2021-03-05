@@ -34,16 +34,16 @@ For example,
 
 The **schedule.txt** file must contain the schedule of that day. The format is,
 
-*_TIME_ <space> _COURSE_CODE_*
+*_TIME_ <SPACE> _COURSE_CODE_*
 
 Enter each course time on a new line.
 For example on a certain day the file would look like this,
 
- 08:00 IP
- 12:30 PC
- 13:00 LD
- 14:00 DM
- 17:00 STAT
+**08:00 IP\
+  12:30 PC\
+  13:00 LD\
+  14:00 DM\
+  17:00 STAT**
 
 **Note: Use 24-Hour time format. Otherwise it won't work and don't blame me if you loose your attendance. And please save the schedule in a ascending format. This is also must for correct functioning.**
 
