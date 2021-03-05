@@ -10,6 +10,22 @@ import time
 import os
 
 
+def display_ascii_art():
+	print("""\
+
+                                       ._ o o
+                                       \_`-)|_
+                                    ,""       \ 
+                                  ,"  ## |   ಠ ಠ. 
+                                ," ##   ,-\__    `.
+                              ,"       /     `--._;)
+                            ,"     ## /
+                          ,"   ##    /
+
+
+                    """)
+	print("Starting the engine...\n")
+
 ########### DOMAIN ###############
 URL = 'https://eduserver.nitc.ac.in' 
 
@@ -80,19 +96,28 @@ day = time.strftime("%A",t)
 last_class_hour = str(list(schedule)[-1]).split(":")[0]
 last_class_min = str(list(schedule)[-1]).split(":")[1]
 marker = time.time()
-marked=False
+marked = False
 console_msg = ''
+cooldown = 10*60
 while int(current_hour)<=int(last_class_hour): 
+	time.sleep(1)
+	if cooldown>(time.time()-marker):
+		session.get(URL+'/dashboard')
+		marker = time.time()
 	os.system('cls' if os.name == 'nt' else 'clear')
+	display_ascii_art()
 	print("Your are logged in as "+display_name+"\n")
 	print("Script running........\n")
 	print("Current Time: "+time.strftime("%H:%M:%S"))
-	print(console_msg)
+	print('-'*40)
+	for c in schedule_marked:
+		print("Course: "+str(c)+" | Attendance Marked: "+str(schedule_marked[c]))
+	print('-'*40)
+	print("Last Message: "+console_msg)
 	if str(time.strftime("%H:%M")) in schedule:
 		course = schedule[str(time.strftime("%H:%M"))]
 		if course=='IP' and not schedule_marked[course]:
 			attendance_view = session.get(URL+attendance_view_api+'?id='+ip_attendance_id)
-			
 			soup = BeautifulSoup(attendance_view.content,'html.parser')
 			subm = soup.findAll('a')
 			submit_links=[]
@@ -121,7 +146,6 @@ while int(current_hour)<=int(last_class_hour):
 			console_msg="Hopefully your attendance has been marked in "+course
 			marked = True
 			schedule_marked[course] = True
-			marker = time.time()
 		elif course == 'LD' and not schedule_marked[course]:
 			attendance_view = session.get(URL+attendance_view_api+'?id='+ld_attandance_id[str(day).lower()])
 			soup = BeautifulSoup(attendance_view.content,'html.parser')
@@ -152,7 +176,6 @@ while int(current_hour)<=int(last_class_hour):
 			console_msg="Hopefully your attendance has been marked in "+course
 			marked = True
 			schedule_marked[course] = True
-			marker = time.time()
 			
 		elif course == 'PC' and not schedule_marked[course]:
 			attendance_view = session.get(URL+attendance_view_api+'?id='+pc_attendance_id)
@@ -185,7 +208,6 @@ while int(current_hour)<=int(last_class_hour):
 			console_msg="Hopefully your attendance has been marked in "+course
 			marked = True
 			schedule_marked[course] = True
-			marker = time.time()
 		elif course == 'DM' and not schedule_marked[course]:
 			course_view = session.get(URL+course_view_api+'?id='+dm_course_id)
 			marked = False
@@ -226,7 +248,6 @@ while int(current_hour)<=int(last_class_hour):
 			console_msg="Hopefully your attendance has been marked in "+course
 			marked = True
 			schedule_marked[course] = True
-			marker = time.time()
 		elif course == 'STAT' and not schedule_marked[course]:
 			course_view = session.get(URL+course_view_api+'?id='+stat_course_id)
 			marked = False
@@ -267,7 +288,6 @@ while int(current_hour)<=int(last_class_hour):
 			console_msg="Hopefully your attendance has been marked in "+course
 			marked = True
 			schedule_marked[course] = True
-			marker = time.time()
 
 
 
