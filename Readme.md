@@ -57,4 +57,4 @@ Now just fire it up with,
 
 ### A message to the users
 
-If you think it is not working perfectly for you, please free to contact me. You can also take the code and customize it for your usecase.
+If you think it is not working perfectly for you, please feel free to contact me or just raise an issue. You can also take the code and customize it for your own use case.
