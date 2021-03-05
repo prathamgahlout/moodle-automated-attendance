@@ -99,7 +99,9 @@ marker = time.time()
 marked = False
 console_msg = ''
 cooldown = 10*60
+reason_for_exit = 'No classes scheduled now!'
 while int(current_hour)<=int(last_class_hour): 
+	reason_for_exit = "Either error or success..."
 	time.sleep(1)
 	if cooldown>(time.time()-marker):
 		session.get(URL+'/dashboard')
@@ -290,6 +292,10 @@ while int(current_hour)<=int(last_class_hour):
 			schedule_marked[course] = True
 
 
-
-
+####### DONE WITH THE ATTENDANCE, NOW EXITING #################
+os.system('cls' if os.name == 'nt' else 'clear')
+display_ascii_art()
+print("Exiting the program in 2s...")
+print("Reason: "+reason_for_exit)
+time.sleep(2)
 
