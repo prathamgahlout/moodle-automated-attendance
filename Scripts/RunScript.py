@@ -1,13 +1,14 @@
 #AUTHOR: Pratham Singh Gahlaut
-#VERSION: 1.0.0
+#VERSION: 1.0.1
 #DATE: 04/03/2021
-#CONNTACT: pgahlaut994@gmail.com, pratham_m200710ca@nitc.ac.in
+#CONTACT: pgahlaut994@gmail.com, pratham_m200710ca@nitc.ac.in
 #DESC: Automated script to scrape through the Eduserver Courses and submit the attendance. Much needed for people like me! 
 
 import requests
 from bs4 import BeautifulSoup
 import time
 import os
+import sys
 
 
 def display_ascii_art():
@@ -85,10 +86,16 @@ login_response = session.post(URL+login_api,data=data)
 # Successfully Logged in at this point, hopefully! if the creds were right. Otherwise no one can help you now XD.
 # Now we can go into loop until the last class.
 
-######### Grabbing Username ############
+######### Grabbing the name ############
+# This could also tell if the login was successful or not #
 sourp = BeautifulSoup(login_response.content,'html.parser')
 t = sourp.find('span',attrs={'class':'usertext mr-1'})
-display_name=t.text
+display_name=''
+try:
+	display_name=t.text
+except:
+	print("\nAn error has occured while logging in! May be just check your credentials?")
+	sys.exit()
 
 t = time.localtime()
 current_hour = time.strftime("%H",t)
@@ -299,7 +306,7 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 				schedule_marked[course] = True
 
 
-####### DONE WITH THE ATTENDANCE, NOW EXITING #################
+####### DONE WITH THE ATTENDANCE, NOW EXITING ###########
 os.system('cls' if os.name == 'nt' else 'clear')
 display_ascii_art()
 print("Exiting the program in 2s...")
