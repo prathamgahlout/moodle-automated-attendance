@@ -57,7 +57,7 @@ Now just fire it up with,
 
 ### Disclaimer
 
-The script is highly dependent on the course teachers way of putting the attendance links like in IP there is a static link which doesn't change and new links for submitting appear in that page. If at all the teacher decides to daily push a new link on the course page the script implementation would have to be changed slightly to adapt this change. And there will always be a way of getting the latest link for submitting the attendance no matter what or how the teachers do.I just needed you to be aware of this fact.
+The script is highly dependent on the course teachers way of putting the attendance links like in IP there is a static link which doesn't change and new links for submitting appear in that page. If at all the teacher decides to daily push a new link on the course page, the script implementation would have to be changed slightly to adapt to this change. And there will always be a way of getting the latest link for submitting the attendance no matter what or how the teachers do. I just needed you to be aware of this fact.
 
 ### A message to the users
 
