@@ -13,18 +13,20 @@ import os
 def display_ascii_art():
 	print("""\
 
-                                       ._ o o
-                                       \_`-)|_
-                                    ,""       \ 
-                                  ,"  ## |   ಠ ಠ. 
-                                ," ##   ,-\__    `.
-                              ,"       /     `--._;)
-                            ,"     ## /
-                          ,"   ##    /
+                       ._ o o
+                       \_`-)|_
+                    ,""       \ 
+                  ,"  ## |   ಠ ಠ. 
+                ," ##   ,-\__    `.
+              ,"       /     `--._;)
+            ,"     ## /
+          ,"   ##    /
 
 
                     """)
+	print('*'*40)
 	print("Starting the engine...\n")
+	print('*'*40)
 
 ########### DOMAIN ###############
 URL = 'https://eduserver.nitc.ac.in' 
@@ -91,7 +93,6 @@ display_name=t.text
 t = time.localtime()
 current_hour = time.strftime("%H",t)
 current_time =  time.strftime("%H:%M",t)
-day = time.strftime("%A",t)
 
 last_class_hour = str(list(schedule)[-1]).split(":")[0]
 last_class_min = str(list(schedule)[-1]).split(":")[1]
@@ -100,7 +101,7 @@ marked = False
 console_msg = ''
 cooldown = 10*60
 reason_for_exit = 'No classes scheduled now!'
-while int(current_hour)<=int(last_class_hour): 
+while int(time.strftime("%H"))<=int(last_class_hour): 
 	reason_for_exit = "Either error or success..."
 	time.sleep(1)
 	if cooldown>(time.time()-marker):
@@ -127,28 +128,30 @@ while int(current_hour)<=int(last_class_hour):
 				if '/attendance/attendance.php?sessid=' in str(link):
 					submit_links.append(link)
 					break
-			soup = BeautifulSoup(str(submit_links[0]),'html.parser')
-			href = soup.find('a')
-			href = str(href['href'])
-			href = href.replace("&amp","&")
-			submit_page = session.get(str(href))
-			soup = BeautifulSoup(submit_page.content,'html.parser')
-			inputs = soup.findAll('input',attrs={'class':'form-check-input'})
-			status = inputs[0]['value']
-			splitted = href.split('?')
-			sess_values = splitted[1].split('&')
-			sessid=sess_values[0].split("=")[1]
-			sesskey=sess_values[1].split("=")[1]
-			_qf__mod_attendance_student_attendance_form=1
-			mform_isexpanded_id_session=1
-			submitbutton='Save+changes'
-			submit_url = href
-			data = {"sessid":sessid,"sesskey":sesskey,"sesskey":sesskey,"_qf__mod_attendance_student_attendance_form":_qf__mod_attendance_student_attendance_form,"mform_isexpanded_id_session":mform_isexpanded_id_session,"status":status,"submitbutton":submitbutton}
-			submit_response = session.post(submit_url,data)
-			console_msg="Hopefully your attendance has been marked in "+course
-			marked = True
-			schedule_marked[course] = True
+			if len(submit_links) != 0:
+				soup = BeautifulSoup(str(submit_links[0]),'html.parser')
+				href = soup.find('a')
+				href = str(href['href'])
+				href = href.replace("&amp","&")
+				submit_page = session.get(str(href))
+				soup = BeautifulSoup(submit_page.content,'html.parser')
+				inputs = soup.findAll('input',attrs={'class':'form-check-input'})
+				status = inputs[0]['value']
+				splitted = href.split('?')
+				sess_values = splitted[1].split('&')
+				sessid=sess_values[0].split("=")[1]
+				sesskey=sess_values[1].split("=")[1]
+				_qf__mod_attendance_student_attendance_form=1
+				mform_isexpanded_id_session=1
+				submitbutton='Save+changes'
+				submit_url = href
+				data = {"sessid":sessid,"sesskey":sesskey,"sesskey":sesskey,"_qf__mod_attendance_student_attendance_form":_qf__mod_attendance_student_attendance_form,"mform_isexpanded_id_session":mform_isexpanded_id_session,"status":status,"submitbutton":submitbutton}
+				submit_response = session.post(submit_url,data)
+				console_msg="Hopefully your attendance has been marked in "+course +" "+ time.strftime("%H:%M:%S")
+				marked = True
+				schedule_marked[course] = True
 		elif course == 'LD' and not schedule_marked[course]:
+			day = time.strftime("%A",t)
 			attendance_view = session.get(URL+attendance_view_api+'?id='+ld_attandance_id[str(day).lower()])
 			soup = BeautifulSoup(attendance_view.content,'html.parser')
 			subm = soup.findAll('a')
@@ -157,27 +160,28 @@ while int(current_hour)<=int(last_class_hour):
 				if '/attendance/attendance.php?sessid=' in str(link):
 					submit_links.append(link)
 					break
-			soup = BeautifulSoup(str(submit_links[0]),'html.parser')
-			href = soup.find('a')
-			href = str(href['href'])
-			href = href.replace("&amp","&")
-			submit_page = session.get(str(href))
-			soup = BeautifulSoup(submit_page.content,'html.parser')
-			inputs = soup.findAll('input',attrs={'class':'form-check-input'})
-			status = inputs[0]['value']
-			splitted = href.split('?')
-			sess_values = splitted[1].split('&')
-			sessid=sess_values[0].split("=")[1]
-			sesskey=sess_values[1].split("=")[1]
-			_qf__mod_attendance_student_attendance_form=1
-			mform_isexpanded_id_session=1
-			submitbutton='Save+changes'
-			submit_url = href
-			data = {"sessid":sessid,"sesskey":sesskey,"sesskey":sesskey,"_qf__mod_attendance_student_attendance_form":_qf__mod_attendance_student_attendance_form,"mform_isexpanded_id_session":mform_isexpanded_id_session,"status":status,"submitbutton":submitbutton}
-			submit_response = session.post(submit_url,data)
-			console_msg="Hopefully your attendance has been marked in "+course
-			marked = True
-			schedule_marked[course] = True
+			if len(submit_links) != 0:
+				soup = BeautifulSoup(str(submit_links[0]),'html.parser')
+				href = soup.find('a')
+				href = str(href['href'])
+				href = href.replace("&amp","&")
+				submit_page = session.get(str(href))
+				soup = BeautifulSoup(submit_page.content,'html.parser')
+				inputs = soup.findAll('input',attrs={'class':'form-check-input'})
+				status = inputs[0]['value']
+				splitted = href.split('?')
+				sess_values = splitted[1].split('&')
+				sessid=sess_values[0].split("=")[1]
+				sesskey=sess_values[1].split("=")[1]
+				_qf__mod_attendance_student_attendance_form=1
+				mform_isexpanded_id_session=1
+				submitbutton='Save+changes'
+				submit_url = href
+				data = {"sessid":sessid,"sesskey":sesskey,"sesskey":sesskey,"_qf__mod_attendance_student_attendance_form":_qf__mod_attendance_student_attendance_form,"mform_isexpanded_id_session":mform_isexpanded_id_session,"status":status,"submitbutton":submitbutton}
+				submit_response = session.post(submit_url,data)
+				console_msg="Hopefully your attendance has been marked in "+course+" "+ time.strftime("%H:%M:%S")
+				marked = True
+				schedule_marked[course] = True
 			
 		elif course == 'PC' and not schedule_marked[course]:
 			attendance_view = session.get(URL+attendance_view_api+'?id='+pc_attendance_id)
@@ -189,27 +193,28 @@ while int(current_hour)<=int(last_class_hour):
 				if '/attendance/attendance.php?sessid=' in str(link):
 					submit_links.append(link)
 					break
-			soup = BeautifulSoup(str(submit_links[0]),'html.parser')
-			href = soup.find('a')
-			href = str(href['href'])
-			href = href.replace("&amp","&")
-			submit_page = session.get(str(href))
-			soup = BeautifulSoup(submit_page.content,'html.parser')
-			inputs = soup.findAll('input',attrs={'class':'form-check-input'})
-			status = inputs[0]['value']
-			splitted = href.split('?')
-			sess_values = splitted[1].split('&')
-			sessid=sess_values[0].split("=")[1]
-			sesskey=sess_values[1].split("=")[1]
-			_qf__mod_attendance_student_attendance_form=1
-			mform_isexpanded_id_session=1
-			submitbutton='Save+changes'
-			submit_url = href
-			data = {"sessid":sessid,"sesskey":sesskey,"sesskey":sesskey,"_qf__mod_attendance_student_attendance_form":_qf__mod_attendance_student_attendance_form,"mform_isexpanded_id_session":mform_isexpanded_id_session,"status":status,"submitbutton":submitbutton}
-			submit_response = session.post(submit_url,data)
-			console_msg="Hopefully your attendance has been marked in "+course
-			marked = True
-			schedule_marked[course] = True
+			if len(submit_links) != 0:
+				soup = BeautifulSoup(str(submit_links[0]),'html.parser')
+				href = soup.find('a')
+				href = str(href['href'])
+				href = href.replace("&amp","&")
+				submit_page = session.get(str(href))
+				soup = BeautifulSoup(submit_page.content,'html.parser')
+				inputs = soup.findAll('input',attrs={'class':'form-check-input'})
+				status = inputs[0]['value']
+				splitted = href.split('?')
+				sess_values = splitted[1].split('&')
+				sessid=sess_values[0].split("=")[1]
+				sesskey=sess_values[1].split("=")[1]
+				_qf__mod_attendance_student_attendance_form=1
+				mform_isexpanded_id_session=1
+				submitbutton='Save+changes'
+				submit_url = href
+				data = {"sessid":sessid,"sesskey":sesskey,"sesskey":sesskey,"_qf__mod_attendance_student_attendance_form":_qf__mod_attendance_student_attendance_form,"mform_isexpanded_id_session":mform_isexpanded_id_session,"status":status,"submitbutton":submitbutton}
+				submit_response = session.post(submit_url,data)
+				console_msg="Hopefully your attendance has been marked in "+course+" "+ time.strftime("%H:%M:%S")
+				marked = True
+				schedule_marked[course] = True
 		elif course == 'DM' and not schedule_marked[course]:
 			course_view = session.get(URL+course_view_api+'?id='+dm_course_id)
 			marked = False
@@ -229,27 +234,28 @@ while int(current_hour)<=int(last_class_hour):
 				if '/attendance/attendance.php?sessid=' in str(link):
 					submit_links.append(link)
 					break
-			soup = BeautifulSoup(str(submit_links[0]),'html.parser')
-			href = soup.find('a')
-			href = str(href['href'])
-			href = href.replace("&amp","&")
-			submit_page = session.get(str(href))
-			soup = BeautifulSoup(submit_page.content,'html.parser')
-			inputs = soup.findAll('input',attrs={'class':'form-check-input'})
-			status = inputs[0]['value']
-			splitted = href.split('?')
-			sess_values = splitted[1].split('&')
-			sessid=sess_values[0].split("=")[1]
-			sesskey=sess_values[1].split("=")[1]
-			_qf__mod_attendance_student_attendance_form=1
-			mform_isexpanded_id_session=1
-			submitbutton='Save+changes'
-			submit_url = href
-			data = {"sessid":sessid,"sesskey":sesskey,"sesskey":sesskey,"_qf__mod_attendance_student_attendance_form":_qf__mod_attendance_student_attendance_form,"mform_isexpanded_id_session":mform_isexpanded_id_session,"status":status,"submitbutton":submitbutton}
-			submit_response = session.post(submit_url,data)
-			console_msg="Hopefully your attendance has been marked in "+course
-			marked = True
-			schedule_marked[course] = True
+			if len(submit_links) != 0:
+				soup = BeautifulSoup(str(submit_links[0]),'html.parser')
+				href = soup.find('a')
+				href = str(href['href'])
+				href = href.replace("&amp","&")
+				submit_page = session.get(str(href))
+				soup = BeautifulSoup(submit_page.content,'html.parser')
+				inputs = soup.findAll('input',attrs={'class':'form-check-input'})
+				status = inputs[0]['value']
+				splitted = href.split('?')
+				sess_values = splitted[1].split('&')
+				sessid=sess_values[0].split("=")[1]
+				sesskey=sess_values[1].split("=")[1]
+				_qf__mod_attendance_student_attendance_form=1
+				mform_isexpanded_id_session=1
+				submitbutton='Save+changes'
+				submit_url = href
+				data = {"sessid":sessid,"sesskey":sesskey,"sesskey":sesskey,"_qf__mod_attendance_student_attendance_form":_qf__mod_attendance_student_attendance_form,"mform_isexpanded_id_session":mform_isexpanded_id_session,"status":status,"submitbutton":submitbutton}
+				submit_response = session.post(submit_url,data)
+				console_msg="Hopefully your attendance has been marked in "+course+" "+ time.strftime("%H:%M:%S")
+				marked = True
+				schedule_marked[course] = True
 		elif course == 'STAT' and not schedule_marked[course]:
 			course_view = session.get(URL+course_view_api+'?id='+stat_course_id)
 			marked = False
@@ -269,27 +275,28 @@ while int(current_hour)<=int(last_class_hour):
 				if '/attendance/attendance.php?sessid=' in str(link):
 					submit_links.append(link)
 					break
-			soup = BeautifulSoup(str(submit_links[0]),'html.parser')
-			href = soup.find('a')
-			href = str(href['href'])
-			href = href.replace("&amp","&")
-			submit_page = session.get(str(href))
-			soup = BeautifulSoup(submit_page.content,'html.parser')
-			inputs = soup.findAll('input',attrs={'class':'form-check-input'})
-			status = inputs[0]['value']
-			splitted = href.split('?')
-			sess_values = splitted[1].split('&')
-			sessid=sess_values[0].split("=")[1]
-			sesskey=sess_values[1].split("=")[1]
-			_qf__mod_attendance_student_attendance_form=1
-			mform_isexpanded_id_session=1
-			submitbutton='Save+changes'
-			submit_url = href
-			data = {"sessid":sessid,"sesskey":sesskey,"sesskey":sesskey,"_qf__mod_attendance_student_attendance_form":_qf__mod_attendance_student_attendance_form,"mform_isexpanded_id_session":mform_isexpanded_id_session,"status":status,"submitbutton":submitbutton}
-			submit_response = session.post(submit_url,data)
-			console_msg="Hopefully your attendance has been marked in "+course
-			marked = True
-			schedule_marked[course] = True
+			if len(submit_links) != 0:
+				soup = BeautifulSoup(str(submit_links[0]),'html.parser')
+				href = soup.find('a')
+				href = str(href['href'])
+				href = href.replace("&amp","&")
+				submit_page = session.get(str(href))
+				soup = BeautifulSoup(submit_page.content,'html.parser')
+				inputs = soup.findAll('input',attrs={'class':'form-check-input'})
+				status = inputs[0]['value']
+				splitted = href.split('?')
+				sess_values = splitted[1].split('&')
+				sessid=sess_values[0].split("=")[1]
+				sesskey=sess_values[1].split("=")[1]
+				_qf__mod_attendance_student_attendance_form=1
+				mform_isexpanded_id_session=1
+				submitbutton='Save+changes'
+				submit_url = href
+				data = {"sessid":sessid,"sesskey":sesskey,"sesskey":sesskey,"_qf__mod_attendance_student_attendance_form":_qf__mod_attendance_student_attendance_form,"mform_isexpanded_id_session":mform_isexpanded_id_session,"status":status,"submitbutton":submitbutton}
+				submit_response = session.post(submit_url,data)
+				console_msg="Hopefully your attendance has been marked in "+course+" "+ time.strftime("%H:%M:%S")
+				marked = True
+				schedule_marked[course] = True
 
 
 ####### DONE WITH THE ATTENDANCE, NOW EXITING #################
