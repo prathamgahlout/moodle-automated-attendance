@@ -1,5 +1,5 @@
 #AUTHOR: Pratham Singh Gahlaut
-#VERSION: 1.0.1
+#VERSION: 1.1.0
 #DATE: 04/03/2021
 #CONTACT: pgahlaut994@gmail.com, pratham_m200710ca@nitc.ac.in
 #DESC: Automated script to scrape through the Eduserver Courses and submit the attendance. Much needed for people like me! 
@@ -14,14 +14,14 @@ import sys
 def display_ascii_art():
 	print("""\
 
-                       ._ o o
-                       \_`-)|_
-                    ,""       \ 
-                  ,"  ## |   ಠ ಠ. 
-                ," ##   ,-\__    `.
-              ,"       /     `--._;)
-            ,"     ## /
-          ,"   ##    /
+	               ._ o o
+	               \_`-)|_
+	            ,""       \ 
+	          ,"  ## |   ಠ ಠ. 
+	        ," ##   ,-\__    `.
+	      ,"       /     `--._;)
+	    ,"     ## /
+	  ,"   ##    /
 
 
                     """)
@@ -37,7 +37,7 @@ login_api = '/login/index.php'
 course_view_api = '/course/view.php' ## takes 'id' as a parameter, ex: /course/view.php?id=1076 for Logic Design Course, 1075 for IP etc.
 attendance_view_api = '/mod/attendance/view.php' ## takes 'id' as a parameter
 attendance_index_api = '/mod/attendance/index.php' ## takes course 'id' as a parameter
-attend_submit_api = '/mod/attendance/attendance.php'
+attend_submit_api = '/mod/attendance/attendance.php' ## takes 'sessid' and 'sesskey' as parameter
 
 ######### STATIC ATENDANCE ID's ############# 
 ip_attendance_id = '29087'
@@ -51,14 +51,14 @@ pc_course_id = '1322'
 dm_course_id = '1030'
 stat_course_id = '1031'
 
-######## Reading login details from file ###############
+######## READING LOGIN DETAILS FROM FILE ###############
 credentials = open("credentials.txt","r")
 text=credentials.read()
 username = text[0:10]
 password = text[10:]
 credentials.close()
 
-####### Reading Today's schedule ###########
+####### READING TODAY'S SCHEDULE ###########
 f = open("schedule.txt","r")
 lines = f.readlines()
 schedule={}
@@ -69,11 +69,11 @@ for line in lines:
 	schedule[line[0]] = line[1]
 	schedule_marked[line[1]] = False
 
-## Creating a moodle session ##
+###### CREATING A MOODLE SESSION ######
 session = requests.Session()
-
 response = session.get(URL)
 
+####### SCRAPING THE 'logintoken' ##########
 login_soup = BeautifulSoup(response.content,'html.parser')
 
 #This token had to be scraped from the hidden 'logintoken' element on login page
@@ -81,12 +81,12 @@ logintoken = str(login_soup.find('input'))[46:-3]
 
 data = {"logintoken":logintoken,"username":username,"password":password}
 
+##### TRYING TO LOGIN #####
 login_response = session.post(URL+login_api,data=data)
 
 # Successfully Logged in at this point, hopefully! if the creds were right. Otherwise no one can help you now XD.
-# Now we can go into loop until the last class.
 
-######### Grabbing the name ############
+######### GRABBING THE NAME ###########
 # This could also tell if the login was successful or not #
 sourp = BeautifulSoup(login_response.content,'html.parser')
 t = sourp.find('span',attrs={'class':'usertext mr-1'})
@@ -101,19 +101,32 @@ t = time.localtime()
 current_hour = time.strftime("%H",t)
 current_time =  time.strftime("%H:%M",t)
 
+########## DOWN HERE GOES THE CODE RESPONSIBLE FOR MARKING MY PRECIOUS ATTENDANCE #########
+
 last_class_hour = str(list(schedule)[-1]).split(":")[0]
 last_class_min = str(list(schedule)[-1]).split(":")[1]
-marker = time.time()
 marked = False
 console_msg = ''
-cooldown = 10*60
+tracked = 'NONE'
+retry_count=0
+keepalive_cooldown = 10*60
+keepalive_marker = time.time()
+tracker_cooldown = 15*60
+tracker_marker=0
+tracking = False
 reason_for_exit = 'No classes scheduled now!'
-while int(time.strftime("%H"))<=int(last_class_hour): 
+while int(time.strftime("%H")) <= int(last_class_hour): 
 	reason_for_exit = "Either error or success..."
 	time.sleep(1)
-	if cooldown>(time.time()-marker):
+	if tracking:
+		time.sleep(9)
+	if keepalive_cooldown < (time.time() - keepalive_marker):
 		session.get(URL+'/dashboard')
-		marker = time.time()
+		keepalive_marker = time.time()
+	if tracking and tracker_cooldown < (time.time() - tracker_marker):
+		tracked = 'NONE'
+		tracking = False
+		tracker_marker = 0
 	os.system('cls' if os.name == 'nt' else 'clear')
 	display_ascii_art()
 	print("Your are logged in as "+display_name+"\n")
@@ -124,8 +137,11 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 		print("Course: "+str(c)+" | Attendance Marked: "+str(schedule_marked[c]))
 	print('-'*40)
 	print("Last Message: "+console_msg)
-	if str(time.strftime("%H:%M")) in schedule:
-		course = schedule[str(time.strftime("%H:%M"))]
+	if str(time.strftime("%H:%M")) in schedule or tracking:
+		if tracked == 'NONE':
+			course = schedule[str(time.strftime("%H:%M"))]
+		else:
+			course = tracked
 		if course=='IP' and not schedule_marked[course]:
 			attendance_view = session.get(URL+attendance_view_api+'?id='+ip_attendance_id)
 			soup = BeautifulSoup(attendance_view.content,'html.parser')
@@ -135,7 +151,7 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 				if '/attendance/attendance.php?sessid=' in str(link):
 					submit_links.append(link)
 					break
-			if len(submit_links) != 0:
+			if len(submit_links) == 1:
 				soup = BeautifulSoup(str(submit_links[0]),'html.parser')
 				href = soup.find('a')
 				href = str(href['href'])
@@ -149,7 +165,7 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 				sessid=sess_values[0].split("=")[1]
 				sesskey=sess_values[1].split("=")[1]
 				_qf__mod_attendance_student_attendance_form=1
-				mform_isexpanded_id_session=1
+				mform_isexpanded_id_session=1 
 				submitbutton='Save+changes'
 				submit_url = href
 				data = {"sessid":sessid,"sesskey":sesskey,"sesskey":sesskey,"_qf__mod_attendance_student_attendance_form":_qf__mod_attendance_student_attendance_form,"mform_isexpanded_id_session":mform_isexpanded_id_session,"status":status,"submitbutton":submitbutton}
@@ -157,6 +173,15 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 				console_msg="Hopefully your attendance has been marked in "+course +" "+ time.strftime("%H:%M:%S")
 				marked = True
 				schedule_marked[course] = True
+				tracked = 'NONE'
+				retry_count=0
+				tracking = False
+			else:
+				retry_count=retry_count+1
+				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+retry_count
+				tracked = 'IP'
+				tracking = True
+				tracker_marker = time.time()
 		elif course == 'LD' and not schedule_marked[course]:
 			day = time.strftime("%A",t)
 			attendance_view = session.get(URL+attendance_view_api+'?id='+ld_attandance_id[str(day).lower()])
@@ -167,7 +192,7 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 				if '/attendance/attendance.php?sessid=' in str(link):
 					submit_links.append(link)
 					break
-			if len(submit_links) != 0:
+			if len(submit_links) == 1:
 				soup = BeautifulSoup(str(submit_links[0]),'html.parser')
 				href = soup.find('a')
 				href = str(href['href'])
@@ -189,7 +214,15 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 				console_msg="Hopefully your attendance has been marked in "+course+" "+ time.strftime("%H:%M:%S")
 				marked = True
 				schedule_marked[course] = True
-			
+				tracked = 'NONE'
+				retry_count=0
+				tracking = False
+			else:
+				retry_count=retry_count+1
+				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+retry_count
+				tracked = 'LD'
+				tracking = True
+				tracker_marker = time.time()
 		elif course == 'PC' and not schedule_marked[course]:
 			attendance_view = session.get(URL+attendance_view_api+'?id='+pc_attendance_id)
 			
@@ -200,7 +233,7 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 				if '/attendance/attendance.php?sessid=' in str(link):
 					submit_links.append(link)
 					break
-			if len(submit_links) != 0:
+			if len(submit_links) == 1:
 				soup = BeautifulSoup(str(submit_links[0]),'html.parser')
 				href = soup.find('a')
 				href = str(href['href'])
@@ -222,6 +255,15 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 				console_msg="Hopefully your attendance has been marked in "+course+" "+ time.strftime("%H:%M:%S")
 				marked = True
 				schedule_marked[course] = True
+				tracked = 'NONE'
+				retry_count=0
+				tracking = False
+			else:
+				retry_count=retry_count+1
+				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+retry_count
+				tracked = 'PC'
+				tracking = True
+				tracker_marker = time.time()
 		elif course == 'DM' and not schedule_marked[course]:
 			course_view = session.get(URL+course_view_api+'?id='+dm_course_id)
 			marked = False
@@ -241,7 +283,7 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 				if '/attendance/attendance.php?sessid=' in str(link):
 					submit_links.append(link)
 					break
-			if len(submit_links) != 0:
+			if len(submit_links) == 1:
 				soup = BeautifulSoup(str(submit_links[0]),'html.parser')
 				href = soup.find('a')
 				href = str(href['href'])
@@ -263,6 +305,15 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 				console_msg="Hopefully your attendance has been marked in "+course+" "+ time.strftime("%H:%M:%S")
 				marked = True
 				schedule_marked[course] = True
+				tracked = 'NONE'
+				retry_count=0
+				tracking = False
+			else:
+				retry_count=retry_count+1
+				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+retry_count
+				tracked = 'DM'
+				tracking = True
+				tracker_marker = time.time()
 		elif course == 'STAT' and not schedule_marked[course]:
 			course_view = session.get(URL+course_view_api+'?id='+stat_course_id)
 			marked = False
@@ -282,7 +333,7 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 				if '/attendance/attendance.php?sessid=' in str(link):
 					submit_links.append(link)
 					break
-			if len(submit_links) != 0:
+			if len(submit_links) == 1:
 				soup = BeautifulSoup(str(submit_links[0]),'html.parser')
 				href = soup.find('a')
 				href = str(href['href'])
@@ -304,7 +355,15 @@ while int(time.strftime("%H"))<=int(last_class_hour):
 				console_msg="Hopefully your attendance has been marked in "+course+" "+ time.strftime("%H:%M:%S")
 				marked = True
 				schedule_marked[course] = True
-
+				tracked = 'NONE'
+				retry_count=0
+				tracking = False
+			else:
+				retry_count=retry_count+1
+				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+retry_count
+				tracked = 'STAT'
+				tracking = True
+				tracker_marker = time.time()
 
 ####### DONE WITH THE ATTENDANCE, NOW EXITING ###########
 os.system('cls' if os.name == 'nt' else 'clear')
