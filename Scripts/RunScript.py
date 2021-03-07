@@ -1,5 +1,5 @@
 #AUTHOR: Pratham Singh Gahlaut
-#VERSION: 1.1.0
+#VERSION: 1.1.2
 #DATE: 04/03/2021
 #CONTACT: pgahlaut994@gmail.com, pratham_m200710ca@nitc.ac.in
 #DESC: Automated script to scrape through the Eduserver Courses and submit the attendance. Much needed for people like me! 
@@ -22,11 +22,9 @@ def display_ascii_art():
 	      ,"       /     `--._;)
 	    ,"     ## /
 	  ,"   ##    /
-
-
                     """)
 	print('*'*40)
-	print("Starting the engine...\n")
+	print("AUTOMATED ATTENDANCE MARKER V1.1.2")
 	print('*'*40)
 
 ########### DOMAIN ###############
@@ -130,8 +128,8 @@ while int(time.strftime("%H")) <= int(last_class_hour):
 	os.system('cls' if os.name == 'nt' else 'clear')
 	display_ascii_art()
 	print("Your are logged in as "+display_name+"\n")
-	print("Script running........\n")
-	print("Current Time: "+time.strftime("%H:%M:%S"))
+	print("Script running........")
+	print("Current Time: "+time.strftime("%H:%M:%S")+"\n")
 	print('-'*40)
 	for c in schedule_marked:
 		print("Course: "+str(c)+" | Attendance Marked: "+str(schedule_marked[c]))
@@ -314,7 +312,7 @@ while int(time.strftime("%H")) <= int(last_class_hour):
 				tracked = 'DM'
 				tracking = True
 				tracker_marker = time.time()
-		elif course == 'STAT' and not schedule_marked[course]:
+		elif course == 'SM' and not schedule_marked[course]:
 			course_view = session.get(URL+course_view_api+'?id='+stat_course_id)
 			marked = False
 			dm_soup = BeautifulSoup(course_view.content,'html.parser')
@@ -361,7 +359,7 @@ while int(time.strftime("%H")) <= int(last_class_hour):
 			else:
 				retry_count=retry_count+1
 				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+retry_count
-				tracked = 'STAT'
+				tracked = 'SM'
 				tracking = True
 				tracker_marker = time.time()
 

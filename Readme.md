@@ -2,8 +2,7 @@
 
 ### Description
 
-A python script to automate the task of loging into the eduserver of Nit calicut and marking the attendance manually. Many would agree that it is rather a tough task especially for the morning 8'O clock
-classes. 
+A python script to automate the task of logging into the eduserver of NIT Calicut and marking the attendance manually. Many would agree that it is rather a tough task especially for the morning 8'O clock classes. 
 
 ---
 
@@ -43,7 +42,7 @@ For example on a certain day the file would look like this,
   12:30 PC\
   13:00 LD\
   14:00 DM\
-  17:00 STAT**
+  17:00 SM**
 
 **Note: Use 24-Hour time format. Otherwise it won't work and don't blame me if you loose your attendance. And please save the schedule in an ascending order of time. This is also must for correct functioning.**
 
@@ -54,6 +53,10 @@ Now just fire it up with,
 `$ python RunScript.py`
 
 ---
+
+### Capabilities
+
+Current capabilites of this script are to mark the attendance if a link is available on the course page, if not then wait for 15 minutes for the teacher to upload the link, otherwise assume the class is cancelled and carry on. One thing that might bug you a little is that you have to daily update the **schedule.txt** file to reflect that schedule of that day. Although, in the future I am planning to allow uploading the whole weeks schedule at once and let the code handle what day to choose from the file. This is not something very hard to implement.
 
 ### Disclaimer
 
