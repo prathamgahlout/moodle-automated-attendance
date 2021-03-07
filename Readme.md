@@ -48,7 +48,7 @@ For example on a certain day the file would look like this,
 
 Keep in mind that you have to daily update the schedule.txt file only.
 
-Now just fire it up with,
+Now from the Scripts directory just fire it up with,
 
 `$ python RunScript.py`
 
