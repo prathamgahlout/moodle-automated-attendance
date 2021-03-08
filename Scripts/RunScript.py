@@ -176,7 +176,7 @@ while int(time.strftime("%H")) <= int(last_class_hour):
 				tracking = False
 			else:
 				retry_count=retry_count+1
-				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+retry_count
+				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+str(retry_count)
 				tracked = 'IP'
 				tracking = True
 				tracker_marker = time.time()
@@ -217,7 +217,7 @@ while int(time.strftime("%H")) <= int(last_class_hour):
 				tracking = False
 			else:
 				retry_count=retry_count+1
-				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+retry_count
+				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+str(retry_count)
 				tracked = 'LD'
 				tracking = True
 				tracker_marker = time.time()
@@ -258,7 +258,7 @@ while int(time.strftime("%H")) <= int(last_class_hour):
 				tracking = False
 			else:
 				retry_count=retry_count+1
-				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+retry_count
+				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+str(retry_count)
 				tracked = 'PC'
 				tracking = True
 				tracker_marker = time.time()
@@ -308,8 +308,7 @@ while int(time.strftime("%H")) <= int(last_class_hour):
 				tracking = False
 			else:
 				retry_count=retry_count+1
-				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+retry_count
-				tracked = 'DM'
+				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+str(retry_count)
 				tracking = True
 				tracker_marker = time.time()
 		elif course == 'SM' and not schedule_marked[course]:
@@ -358,7 +357,7 @@ while int(time.strftime("%H")) <= int(last_class_hour):
 				tracking = False
 			else:
 				retry_count=retry_count+1
-				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+retry_count
+				console_msg = "There is no attendance link of "+course+" at "+time.strftime("%H:%M:%S")+" ! Retry count: "+str(retry_count)
 				tracked = 'SM'
 				tracking = True
 				tracker_marker = time.time()
