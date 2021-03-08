@@ -48,7 +48,7 @@ For example on a certain day the file would look like this,
 
 Keep in mind that you have to daily update the schedule.txt file only.
 
-Now from the ***/Scripts*** directory just fire it up with,
+Now from the ***"/Scripts/"*** directory just fire it up with,
 
 `$ python RunScript.py`
 
@@ -56,7 +56,7 @@ Now from the ***/Scripts*** directory just fire it up with,
 
 ### Capabilities
 
-Current capabilites of this script are to mark the attendance if a link is available on the course page, if not then wait for 15 minutes for the teacher to upload the link, otherwise assume the class is cancelled and carry on. One thing that might bug you a little is that you have to daily update the **schedule.txt** file to reflect that schedule of that day. Although, in the future I am planning to allow uploading the whole weeks schedule at once and let the code handle what day to choose from the file. This is not something very hard to implement.
+Current capabilites of this script are to mark the attendance if a link is available on the course page, if not then wait for 15 minutes for the teacher to upload the link, otherwise assume the class is cancelled and carry on. One thing that might bug you a little is that you have to daily update the **schedule.txt** file to reflect the schedule of that day. Although, in the future changes could be made in the code to allow uploading the whole weeks schedule at once and let the code handle what day to choose from the file. This is not something very hard to implement.
 
 ### Disclaimer
 
