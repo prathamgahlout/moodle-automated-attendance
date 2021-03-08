@@ -127,7 +127,7 @@ while int(time.strftime("%H")) <= int(last_class_hour):
 		tracker_marker = 0
 	os.system('cls' if os.name == 'nt' else 'clear')
 	display_ascii_art()
-	print("Your are logged in as "+display_name+"\n")
+	print("You are logged in as "+display_name+"\n")
 	print("Script running........")
 	print("Current Time: "+time.strftime("%H:%M:%S")+"\n")
 	print('-'*40)
